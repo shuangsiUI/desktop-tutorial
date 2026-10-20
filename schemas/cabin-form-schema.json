@@ -1,0 +1,93 @@
+{
+  "com": "panelForm",
+  "version": "v1",
+  "backdropClose": false,
+  "closeBtn": true,
+  "title": "创建",
+  "form": {
+    "com": "form",
+    "layout": "horizontal",
+    "version": "v1",
+    "id": "Zone-form",
+    "method": "POST",
+    "url": "/tms/wos/cabin_reserve/save",
+    "columns": [
+      {
+        "version": "v1",
+        "label": "舱位资源",
+        "name": "cabin_resource_id",
+        "value": "",
+        "type": "select",
+        "options": [],
+        "required": true,
+        "disabled": false,
+        "changeUrl": "/tms/wos/cabin_reserve/change_form"
+      },
+      {
+        "version": "v1",
+        "label": "容量单位",
+        "name": "capacity_unit",
+        "value": "",
+        "type": "select",
+        "options": [
+          {
+            "value": "kg",
+            "label": "kg"
+          },
+          {
+            "value": "cube",
+            "label": "m³"
+          }
+        ],
+        "disabled": true
+      },
+      {
+        "version": "v1",
+        "label": "预定容量",
+        "name": "scheduled_capacity",
+        "value": 0,
+        "type": "input",
+        "required": true,
+        "disabled": false
+      },
+      {
+        "version": "v1",
+        "label": "调配类型",
+        "name": "deploy_type",
+        "value": "",
+        "type": "select",
+        "options": [
+          {
+            "value": "fixed",
+            "label": "固定位"
+          },
+          {
+            "value": "adjust",
+            "label": "可调配"
+          }
+        ],
+        "required": true,
+        "disabled": false
+      },
+      {
+        "version": "v1",
+        "label": "运单号",
+        "name": "items_nums",
+        "value": "",
+        "type": "textarea",
+        "placeholder": "请输入运单号(多个运单号请换行或”,\"隔开)",
+        "disabled": false
+      },
+      {
+        "version": "v1",
+        "label": "备注",
+        "name": "remark",
+        "value": "",
+        "type": "input"
+      }
+    ],
+    "stretch": true,
+    "btnLayout": "vertical",
+    "promptId": "Zone-form"
+  }
+}

@@ -1,0 +1,295 @@
+{
+  "com": "panelForm",
+  "version": "v1",
+  "backdropClose": false,
+  "closeBtn": true,
+  "title": "",
+  "form": {
+    "com": "form",
+    "layout": "horizontal",
+    "version": "v1",
+    "id": "product-form",
+    "method": "POST",
+    "url": "/tms/wos/product/save",
+    "columns": [
+      {
+        "com": "column",
+        "version": "v1",
+        "span": 12,
+        "data": [
+          {
+            "version": "v1",
+            "label": "",
+            "name": "id",
+            "value": "",
+            "type": "hidden",
+            "hidden": true
+          },
+          {
+            "version": "v1",
+            "label": "商品平台",
+            "name": "platform",
+            "value": "",
+            "type": "select",
+            "options": [
+              {
+                "value": "EMEMONLINE",
+                "label": "Ememonline"
+              },
+              {
+                "value": "EBAY",
+                "label": "Ebay"
+              },
+              {
+                "value": "WISH",
+                "label": "Wish"
+              },
+              {
+                "value": "WALMART",
+                "label": "Walmart"
+              },
+              {
+                "value": "AMAZON",
+                "label": "Amazon"
+              },
+              {
+                "value": "AliEXPRESS",
+                "label": "Aliexpress"
+              },
+              {
+                "value": "FAR NOP",
+                "label": "Far nop"
+              },
+              {
+                "value": "TIKTOK",
+                "label": "TIKTOK"
+              },
+              {
+                "value": "MERCADOLIBRE",
+                "label": "MercadoLibre"
+              }
+            ],
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "商品SKU",
+            "name": "sku",
+            "value": "",
+            "type": "input",
+            "required": 1,
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "中文品名",
+            "name": "name_zh",
+            "value": "",
+            "type": "input",
+            "required": 1,
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "英文品名",
+            "name": "name_en",
+            "value": "",
+            "type": "input",
+            "required": 1,
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "申报单价",
+            "name": "unit_value",
+            "value": "",
+            "type": "input",
+            "required": 1,
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "重量",
+            "name": "weight",
+            "value": 0,
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "尺寸",
+            "name": "size",
+            "value": "",
+            "type": "input",
+            "placeholder": "格式：长*宽*高（50*50*50）：CM",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "销售价格",
+            "name": "sale_price",
+            "value": 0,
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "销售链接",
+            "name": "sale_url",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "图片链接",
+            "name": "photo_url",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "filesCount": 10,
+            "download": true,
+            "fileSize": 1,
+            "version": "v1",
+            "label": "图片",
+            "name": "photos",
+            "value": "",
+            "type": "uploadImage",
+            "disabled": false
+          }
+        ]
+      },
+      {
+        "com": "column",
+        "version": "v1",
+        "span": 12,
+        "data": [
+          {
+            "version": "v1",
+            "label": "是否带电池",
+            "name": "battery",
+            "value": 0,
+            "type": "switch",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "材质",
+            "name": "material",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "用途",
+            "name": "usage",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "ASIN",
+            "name": "asin",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "FNSKU",
+            "name": "fnsku",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "海关编码",
+            "name": "hscode",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "税率",
+            "name": "duty_rate",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "品牌",
+            "name": "brand",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "型号",
+            "name": "model",
+            "value": "",
+            "type": "input",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "描述",
+            "name": "description",
+            "value": "",
+            "type": "textarea",
+            "disabled": false
+          },
+          {
+            "version": "v1",
+            "label": "备注",
+            "name": "remark",
+            "value": "",
+            "type": "textarea",
+            "disabled": false
+          }
+        ]
+      }
+    ],
+    "footer": {
+      "width": 150,
+      "class": "",
+      "com": "btnGroups",
+      "items": [
+        {
+          "version": "v1",
+          "class": "pod-btn-success pod-btn-block",
+          "icon": "fa fa-check",
+          "label": "保存",
+          "callbacks": [
+            "submit",
+            "rePage",
+            "close"
+          ],
+          "backdropClose": false,
+          "data": []
+        },
+        {
+          "version": "v1",
+          "class": "pod-btn-default pod-btn-block",
+          "icon": "fa fa-times",
+          "label": "关闭",
+          "callbacks": [
+            "close"
+          ],
+          "backdropClose": false,
+          "data": []
+        }
+      ]
+    },
+    "stretch": true,
+    "btnLayout": "vertical",
+    "promptId": "product-form"
+  }
+}

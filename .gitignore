@@ -1,0 +1,16 @@
+data/*.sqlite*
+node_modules/
+output/
+research/nextsls/session-evidence.json
+research/nextsls/recovery/*-evidence.json
+
+# Local data and original-site research are never part of the code upload.
+data/
+research/
+archive/
+public/assets/logo.png
+.env
+.env.*
+!.env.example
+.DS_Store
+*.log

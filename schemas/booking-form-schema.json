@@ -1,0 +1,123 @@
+{
+  "com": "panelForm",
+  "version": "v1",
+  "backdropClose": false,
+  "closeBtn": true,
+  "title": "创建预约",
+  "form": {
+    "com": "form",
+    "layout": "horizontal",
+    "version": "v1",
+    "id": "booking-form",
+    "method": "POST",
+    "url": "/tms/wos/booking/save",
+    "columns": [
+      {
+        "version": "v1",
+        "label": "",
+        "name": "id",
+        "value": "",
+        "type": "hidden",
+        "hidden": true
+      },
+      {
+        "version": "v1",
+        "label": "收货地址",
+        "name": "address_id",
+        "value": "",
+        "type": "select",
+        "options": {},
+        "required": true
+      },
+      {
+        "version": "v1",
+        "label": "预约箱数",
+        "name": "box_count",
+        "value": 0,
+        "type": "number",
+        "required": true
+      },
+      {
+        "precision": 3,
+        "version": "v1",
+        "label": "预计重量",
+        "name": "weight",
+        "value": 0,
+        "type": "number",
+        "required": true
+      },
+      {
+        "precision": 3,
+        "version": "v1",
+        "label": "预计体积",
+        "name": "volume",
+        "value": 0,
+        "type": "number"
+      },
+      {
+        "version": "v1",
+        "label": "预约车型",
+        "name": "car_model",
+        "value": "minibus",
+        "type": "select",
+        "options": {
+          "minibus": "面包车",
+          "minitruck": "小货车",
+          "midtruck": "中型货车"
+        }
+      },
+      {
+        "showTime": true,
+        "format": "",
+        "version": "v1",
+        "label": "预约时间",
+        "name": "booking_time",
+        "value": 1792492610,
+        "type": "date",
+        "required": true
+      },
+      {
+        "version": "v1",
+        "label": "备注",
+        "name": "remark",
+        "value": "",
+        "type": "textarea"
+      }
+    ],
+    "footer": {
+      "width": 150,
+      "class": "",
+      "com": "btnGroups",
+      "items": [
+        {
+          "version": "v1",
+          "class": "pod-btn-success pod-btn-block",
+          "icon": "fa fa-check",
+          "label": "保存",
+          "callbacks": [
+            "submit",
+            "rePage",
+            "reParent",
+            "close"
+          ],
+          "backdropClose": false,
+          "data": []
+        },
+        {
+          "version": "v1",
+          "class": "pod-btn-default pod-btn-block",
+          "icon": "fa fa-times",
+          "label": "关闭",
+          "callbacks": [
+            "close"
+          ],
+          "backdropClose": false,
+          "data": []
+        }
+      ]
+    },
+    "stretch": true,
+    "btnLayout": "vertical",
+    "promptId": "booking-form"
+  }
+}
