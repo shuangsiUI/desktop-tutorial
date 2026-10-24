@@ -9,6 +9,7 @@ import { createCommercialService } from './backend/modules/commercial/service.mj
 import { requestContext } from './backend/persistence/context.mjs';
 import { creditBalance } from './backend/modules/commercial/ledger.mjs';
 import { inspectIntegrity } from './backend/operations/integrity.mjs';
+import { assignLegacyGroup } from './backend/modules/commercial/assignment.mjs';
 const maker = { id: 'maker', role: 'finance' },
   reviewer = { id: 'reviewer', role: 'admin' },
   operator = { id: 'operator', role: 'operator' };
@@ -513,6 +514,104 @@ test('历史应收迁移只建立期初未收，不虚构银行收款', () => {
     assert.equal(
       c.db.prepare('SELECT count(*) n FROM ledger_transactions WHERE invoice_id=?').get(row.id).n,
       1
+    );
+  } finally {
+    c.db.close();
+  }
+});
+test('关联旧运单和旧账单原子分配，数据库提交时强制同客户', () => {
+  const c = setup();
+  try {
+    const shipment = { id: 'LEGACY-S', status: 'ready', version: 1, parcels: [] },
+      invoice = {
+        id: 'LEGACY-I',
+        reference: 'LEGACY-I',
+        currency: 'USD',
+        version: 1,
+        totalCents: 1000,
+        allocatedCents: 500,
+        lines: [{ shipmentId: shipment.id, reference: 'F', amountCents: 1000 }]
+      };
+    c.db
+      .prepare('INSERT INTO records VALUES(?,?,?)')
+      .run(shipment.id, 'replica:shipment', JSON.stringify(shipment));
+    c.db
+      .prepare('INSERT INTO records VALUES(?,?,?)')
+      .run(invoice.id, 'replica:invoice', JSON.stringify(invoice));
+    assert.throws(
+      () =>
+        c.db
+          .prepare('UPDATE records SET body=? WHERE id=?')
+          .run(JSON.stringify({ ...shipment, customer_id: c.customer.id }), shipment.id),
+      /FOREIGN KEY/
+    );
+    const result = assignLegacyGroup(c.db, reviewer, {
+      customerId: c.customer.id,
+      shipments: [{ id: shipment.id, version: 1 }],
+      invoices: [{ id: invoice.id, version: 1 }],
+      reason: '核对原始资料后分配'
+    });
+    assert.equal(result.shipments[0].customer_id, c.customer.id);
+    assert.equal(result.invoices[0].customer_id, c.customer.id);
+    assert.equal(inspectIntegrity(c.db).ok, true);
+    assert.equal(
+      c.db
+        .prepare('SELECT amount_cents FROM ledger_transactions WHERE invoice_id=?')
+        .get(invoice.id).amount_cents,
+      500
+    );
+  } finally {
+    c.db.close();
+  }
+});
+test('旧数据分配遗漏关联或旧版本时，整个分配不落库', () => {
+  const c = setup();
+  try {
+    c.db
+      .prepare('INSERT INTO records VALUES(?,?,?)')
+      .run('LS', 'replica:shipment', JSON.stringify({ id: 'LS', status: 'ready', version: 1 }));
+    c.db
+      .prepare('INSERT INTO records VALUES(?,?,?)')
+      .run(
+        'LI',
+        'replica:invoice',
+        JSON.stringify({
+          id: 'LI',
+          reference: 'LI',
+          currency: 'USD',
+          version: 1,
+          totalCents: 100,
+          allocatedCents: 0,
+          lines: [{ shipmentId: 'LS' }]
+        })
+      );
+    assert.throws(
+      () =>
+        assignLegacyGroup(c.db, reviewer, {
+          customerId: c.customer.id,
+          shipments: [{ id: 'LS', version: 1 }],
+          invoices: [],
+          reason: '遗漏测试'
+        }),
+      /全部关联账单/
+    );
+    assert.throws(
+      () =>
+        assignLegacyGroup(c.db, reviewer, {
+          customerId: c.customer.id,
+          shipments: [{ id: 'LS', version: 1 }],
+          invoices: [{ id: 'LI', version: 0 }],
+          reason: '冲突测试'
+        }),
+      /已更新/
+    );
+    assert.equal(
+      JSON.parse(c.db.prepare('SELECT body FROM records WHERE id=?').get('LS').body).customer_id,
+      undefined
+    );
+    assert.throws(
+      () => assignLegacyGroup(c.db, operator, {}),
+      (e) => e.status === 403
     );
   } finally {
     c.db.close();

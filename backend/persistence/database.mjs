@@ -1,3 +1,4 @@
+import { migrateOwnership } from './ownership-migration.mjs';
 import { invoiceJournal } from '../modules/commercial/ledger.mjs';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync, existsSync, chmodSync } from 'node:fs';
@@ -63,6 +64,16 @@ export function migrate(db, file) {
   }
   try {
     migrateCommercial(db);
+    if (
+      !db.prepare('SELECT 1 FROM schema_migrations WHERE version=4').get() &&
+      file &&
+      db.prepare('SELECT count(*) n FROM records').get().n
+    ) {
+      const backup = file + '.before-ownership-' + Date.now() + '.sqlite';
+      db.exec("VACUUM INTO '" + backup.replaceAll("'", "''") + "'");
+      chmodSync(backup, 0o600);
+    }
+    migrateOwnership(db);
     installCommercialAudit(db);
     db.exec('BEGIN IMMEDIATE');
     try {

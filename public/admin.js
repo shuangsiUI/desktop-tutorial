@@ -399,6 +399,30 @@ async function overview() {
     b.onclick = () => navigate(b.dataset.go);
   });
 }
+function legacyAssignForm(row) {
+  modal(
+    '整组分配旧运单与账单',
+    `<p>目标客户：${esc(row.name)}。仅处理尚无客户归属的旧记录，必须包含全部关联运单与账单。</p><p>每行填写 ID,版本；版本可在记录详情中查看。</p>${textarea('shipments', '旧运单 ID,版本（每行一条）')}${textarea('invoices', '旧账单 ID,版本（每行一条）')}${textarea('reason', '核对依据与分配原因')}${actions('原子分配')}`,
+    (data) => {
+      const parse = (value) =>
+        String(value || '')
+          .split(/\n/)
+          .map((s) => s.trim())
+          .filter(Boolean)
+          .map((s) => {
+            const parts = s.split(',');
+            if (parts.length !== 2) throw Error('每行格式为 ID,版本');
+            return { id: parts[0].trim(), version: Number(parts[1]) };
+          });
+      return api('record/assign-group', {
+        customerId: row.id,
+        shipments: parse(data.shipments),
+        invoices: parse(data.invoices),
+        reason: data.reason
+      });
+    }
+  );
+}
 function customerForm(row) {
   modal(
     row ? '编辑客户' : '新增客户',
@@ -458,6 +482,7 @@ function shipmentView(row) {
   modal(
     '运单详情',
     `<div class="detail-grid">${[
+      ['运单ID / 版本', row.id + ' / ' + row.version],
       ['运单号', row.shipment_number],
       ['客户单号', row.client_reference],
       ['所属客户', client?.name || '尚未分配'],
@@ -748,7 +773,7 @@ function drawList() {
       esc(r.currency || 'CNY') + ' ' + money(r.creditCents || 0),
       esc(r.channelIds?.length || '不限'),
       tag(r.status),
-      button(r.id, 'edit', '编辑')
+      button(r.id, 'edit', '编辑') + button(r.id, 'legacyAssign', '分配旧数据')
     ]);
   } else if (current === 'channels') {
     headers = [
@@ -1022,8 +1047,10 @@ function drawList() {
           action = b.dataset.action;
         if (current === 'users') userForm(row);
         else if (current === 'revisions') reviewInvoice(row, action);
-        else if (current === 'customers') customerForm(row);
-        else if (current === 'channels') {
+        else if (current === 'customers') {
+          if (action === 'legacyAssign') legacyAssignForm(row);
+          else customerForm(row);
+        } else if (current === 'channels') {
           if (action === 'archive') archiveChannel(row);
           else if (action === 'quote') quoteChannel(row);
           else if (action === 'pricing') pricingForm(row);

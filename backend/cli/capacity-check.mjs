@@ -91,7 +91,7 @@ try {
   latencies.sort((a, b) => a - b);
   const integrity = inspectIntegrity(db),
     report = {
-      version: '0.8.0',
+      version: '0.8.1',
       checkedAt: new Date().toISOString(),
       scope: 'Isolated loopback HTTP read workload, synthetic data; not a production SLA',
       node: process.version,

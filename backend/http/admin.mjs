@@ -1,3 +1,4 @@
+import { assignLegacyGroup } from '../modules/commercial/assignment.mjs';
 import { dashboard } from '../modules/operations/dashboard.mjs';
 import { queryRecords } from '../persistence/query.mjs';
 import { context } from '../persistence/context.mjs';
@@ -50,6 +51,7 @@ export function createAdminRouter(db) {
       cabin: ['bookings:read', () => catalog.list('cabin')]
     };
     const writes = {
+      'record/assign-group': ['customers:write', (b) => assignLegacyGroup(db, p, b)],
       'record/assign': ['catalog:write', (b) => catalog.assign(b.module, b)],
       'invoice/assign': ['finance:write', finance.assignInvoice],
       'channel/quote': ['channels:read', admin.quoteChannel],
