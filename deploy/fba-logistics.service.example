@@ -1,0 +1,20 @@
+[Unit]
+Description=FBA Logistics Application
+After=network.target
+[Service]
+Type=simple
+User=fba-logistics
+Group=fba-logistics
+WorkingDirectory=/opt/fba-logistics
+EnvironmentFile=/etc/fba-logistics.env
+ExecStart=/usr/bin/node /opt/fba-logistics/server.mjs
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/fba-logistics/data
+[Install]
+WantedBy=multi-user.target

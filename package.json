@@ -1,1 +1,22 @@
-{"name":"fba-logistics","version":"0.6.0","private":true,"type":"module","scripts":{"dev":"node server.mjs","test":"node --test"},"engines":{"node":">=24"}}
+{
+  "name": "fba-logistics",
+  "version": "0.8.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "test": "node --test",
+    "start": "node server.mjs",
+    "user:create": "node backend/cli/create-user.mjs",
+    "db:backup": "node backend/cli/backup.mjs",
+    "db:check": "node backend/cli/check.mjs",
+    "db:restore-check": "node backend/cli/restore-check.mjs",
+    "ops:check": "node backend/cli/monitor.mjs",
+    "user:mfa": "node backend/cli/mfa-enroll.mjs",
+    "test:capacity": "node backend/cli/capacity-check.mjs",
+    "db:restore-export": "node backend/cli/restore-export.mjs"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}

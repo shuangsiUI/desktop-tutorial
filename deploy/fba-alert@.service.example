@@ -1,0 +1,5 @@
+[Unit]
+Description=Record FBA operational failure
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/logger -p daemon.err FBA operation failed: %i. Configure your monitoring system to forward this event to the on-call contact.

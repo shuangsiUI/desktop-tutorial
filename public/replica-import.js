@@ -1,3 +1,4 @@
+import {readSpreadsheet} from './excel-reader.js';
 import {renderFields,readValues,flattenFields,mergeFormColumns,fillParcelNumbers} from './replica-modules.js';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const label=v=>String(v??'').replace(/<[^>]*>/g,'').replace(/[＊*]/g,'').trim();
@@ -44,7 +45,7 @@ export function openParcelImport(ctx,config,{onComplete}={}) {
       const file=event.target.files[0];if(!file)return;
       try{
         if(file.size>5*1024*1024)throw Error('文件不能超过 5 MB');if(!/\.(xlsx|xls|csv)$/i.test(file.name))throw Error('仅支持 XLSX 或 CSV 文件');
-        const buffer=await file.arrayBuffer();const workbook=window.XLSX.read(buffer,{type:'array',raw:true,cellDates:false});parcels=parseParcelSheet(window.XLSX,workbook,tableColumns);filename=file.name;
+        parcels=await readSpreadsheet(file,{mode:'parcel',tableColumns});filename=file.name;
         document.getElementById('parcelImportPreview').innerHTML=`<p>${esc(filename)}：${parcels.length} 行，共 ${new Set(parcels.map(p=>p.number)).size} 箱；预览前 10 行。</p><div class="table-wrap"><table class="data-table"><thead><tr>${tableColumns.map(c=>`<th>${esc(label(c.label))}</th>`).join('')}</tr></thead><tbody>${parcels.slice(0,10).map(p=>`<tr>${tableColumns.map(c=>`<td>${esc(p[c.name])}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
         document.getElementById('saveParcelImport').disabled=false;
       }catch(error){document.getElementById('parcelImportPreview').innerHTML=`<pre style="white-space:pre-wrap;color:#c0392b">${esc(error.message)}</pre>`;ctx.notify(error.message);}
@@ -124,8 +125,8 @@ export function openShipmentImport(ctx,config,{onComplete}={}) {
   parsed=null;document.getElementById('originalImportSave').disabled=true;const file=event.target.files[0];if(!file)return;
   try{
    if(file.size>5*1024*1024)throw Error('文件不能超过5 MB');if(!/\.xlsx?$/i.test(file.name))throw Error('仅支持XLS或XLSX');
-   const [buffer,stores,addresses]=await Promise.all([file.arrayBuffer(),ctx.api('/api/replica/store'),ctx.api('/api/replica/address')]);
-   const workbook=window.XLSX.read(buffer,{type:'array',raw:true,cellDates:false});parsed=parseOriginalShipmentWorkbook(window.XLSX,workbook,config,{stores,addresses,defaults:{eori:document.getElementById('originalImportEori').value}});
+   const [stores,addresses]=await Promise.all([ctx.api('/api/replica/store'),ctx.api('/api/replica/address')]);
+   parsed=await readSpreadsheet(file,{mode:'original',config,options:{stores,addresses,defaults:{eori:document.getElementById('originalImportEori').value}}});
    document.getElementById('originalImportPreview').innerHTML=`<p>${parsed.type==='single'?'单票':'多票'}模板：${parsed.inputs.length}票，${parsed.inputs.reduce((n,input)=>n+input.parcels.length,0)}行。</p><div class="table-wrap"><table class="data-table"><thead><tr><th>客户单号</th><th>服务</th><th>收件人</th><th>国家</th><th>箱数</th><th>申报行</th></tr></thead><tbody>${parsed.inputs.map(input=>`<tr><td>${esc(input.values.client_reference)}</td><td>${esc(input.values.service)}</td><td>${esc(input.values.name)}</td><td>${esc(input.values.country)}</td><td>${input.parcel_count}</td><td>${input.parcels.length}</td></tr>`).join('')}</tbody></table></div>${parsed.warnings.length?`<div class="notice">${parsed.warnings.map(esc).join('<br>')}<p><label><input type="checkbox" id="importOmissionConfirmed">我已核对，确认以上未映射字段不会写入本地运单</label></p></div>`:''}`;
    document.getElementById('originalImportSave').disabled=false;
   }catch(error){parsed=null;document.getElementById('originalImportPreview').innerHTML=`<pre style="white-space:pre-wrap;color:#c0392b">${esc(error.message)}</pre>`;ctx.notify(error.message);}

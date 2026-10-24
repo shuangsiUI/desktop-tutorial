@@ -1,0 +1,13 @@
+[Unit]
+Description=FBA backup freshness and accounting monitor
+OnFailure=fba-alert@%n.service
+[Service]
+Type=oneshot
+User=fba-logistics
+WorkingDirectory=/opt/fba-logistics
+EnvironmentFile=/etc/fba-logistics.env
+ExecStart=/usr/bin/node /opt/fba-logistics/backend/cli/monitor.mjs
+UMask=0077
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/fba-logistics/data
